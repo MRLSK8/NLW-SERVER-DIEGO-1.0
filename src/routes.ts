@@ -17,4 +17,44 @@ routes.get('/items', async (request, response) => {
   return response.json(serializedItems);
 });
 
+routes.post('/points', async (request, response) => {
+  const {
+    name,
+    email,
+    whatsapp,
+    city,
+    uf,
+    latitude,
+    longitude,
+    items,
+  } = request.body;
+
+  const transaction = await knex.transaction();
+
+  const insertedIds = await transaction('points')
+    .insert({
+      image: 'image-fake',
+      name,
+      email,
+      whatsapp,
+      city,
+      uf,
+      latitude,
+      longitude,
+    })
+    .catch((error) => {
+      response.status(500).json({ success: false, error });
+    });
+
+  const point_id = insertedIds && insertedIds[0];
+
+  const pointsItems = items.map((item_id: number) => {
+    return { item_id, point_id };
+  });
+
+  await transaction('points_items').insert(pointsItems);
+
+  return response.json({ success: true });
+});
+
 export default routes;
