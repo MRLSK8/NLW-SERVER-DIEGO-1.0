@@ -62,10 +62,22 @@ class PointsController {
   }
 
   async index(request: Request, response: Response) {
-    const points = await knex('points').select('*');
+    const { city, uf, items } = request.query;
+
+    const parsedItems = String(items)
+      .split(',')
+      .map((item) => Number(item.trim()));
+
+    const points = await knex('points')
+      .join('points_items', 'points.id', '=', 'points_items.point_id')
+      .whereIn('points_items.item_id', parsedItems)
+      .where('city', String(city))
+      .where('uf', String(uf))
+      .distinct()
+      .select('points.*');
 
     if (!points) {
-      return response.status(400).json({ Message: 'Points not found' });
+      return response.status(400).json({ Message: 'No points found' });
     }
 
     return response.json(points);

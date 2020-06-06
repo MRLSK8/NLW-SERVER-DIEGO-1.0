@@ -14,4 +14,3 @@ routes.get('/points', pointsController.index);
 routes.post('/points', pointsController.create);
 
 export default routes;
- 
