@@ -15,34 +15,34 @@ class PointsController {
       items,
     } = request.body;
 
-    const transaction = await knex.transaction();
+    try {
+      await knex.transaction(async (trx) => {
+        const point = {
+          image: 'image-fake',
+          name,
+          email,
+          whatsapp,
+          city,
+          uf,
+          latitude,
+          longitude,
+        };
 
-    const point = {
-      image: 'image-fake',
-      name,
-      email,
-      whatsapp,
-      city,
-      uf,
-      latitude,
-      longitude,
-    };
+        const insertedIds = await trx('points').insert(point);
 
-    const insertedIds = await transaction('points')
-      .insert(point)
-      .catch((error: Error) => {
-        response.status(500).json({ success: false, error });
+        const point_id = insertedIds[0];
+
+        const pointsItems = items.map((item_id: Number) => {
+          return { item_id, point_id };
+        });
+
+        await trx('points_items').insert(pointsItems);
+
+        return response.json({ id: point_id, ...point });
       });
-
-    const point_id = insertedIds && insertedIds[0];
-
-    const pointsItems = items.map((item_id: number) => {
-      return { item_id, point_id };
-    });
-
-    await transaction('points_items').insert(pointsItems);
-
-    return response.json({ id: point_id, ...point });
+    } catch (error) {
+      return response.status(400).json({ Error: error });
+    }
   }
 
   async show(request: Request, response: Response) {
