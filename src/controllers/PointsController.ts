@@ -18,8 +18,7 @@ class PointsController {
     try {
       await knex.transaction(async (trx) => {
         const point = {
-          image:
-            'https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60',
+          image: request.file.filename,
           name,
           email,
           whatsapp,
@@ -33,9 +32,12 @@ class PointsController {
 
         const point_id = insertedIds[0];
 
-        const pointsItems = items.map((item_id: Number) => {
-          return { item_id, point_id };
-        });
+        const pointsItems = items
+          .split(',')
+          .map((item: String) => Number(item.trim()))
+          .map((item_id: Number) => {
+            return { item_id, point_id };
+          });
 
         await trx('points_items').insert(pointsItems);
 
@@ -60,6 +62,16 @@ class PointsController {
       .where('points_items.point_id', id);
 
     return response.json({ point, items });
+  }
+
+  async showAll(request: Request, response: Response) {
+    const point = await knex('points').select('*');
+
+    if (!point) {
+      return response.status(400).json({ Message: 'Points not found' });
+    }
+
+    return response.json({ point });
   }
 
   async index(request: Request, response: Response) {
