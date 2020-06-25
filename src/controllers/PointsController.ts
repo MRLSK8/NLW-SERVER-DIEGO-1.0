@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
+import url from '../utils/url';
 
 // create, index, show, update, delete
 class PointsController {
@@ -59,7 +60,7 @@ class PointsController {
 
     const serializedPoint = {
       ...point,
-      image_url: `http://localhost:3333/uploads/${point.image}`,
+      image_url: `${url}uploads/${point.image}`,
     };
 
     const items = await knex('items')
@@ -79,7 +80,7 @@ class PointsController {
     const serializedPoints = points.map((point) => {
       return {
         ...point,
-        image_url: `http://localhost:3333/uploads/${point.image}`,
+        image_url: `${url}uploads/${point.image}`,
       };
     });
 
@@ -108,7 +109,7 @@ class PointsController {
     const serializedPoints = points.map((point) => {
       return {
         ...point,
-        image_url: `http://localhost:3333/uploads/${point.image}`,
+        image_url: `${url}uploads/${point.image}`,
       };
     });
 

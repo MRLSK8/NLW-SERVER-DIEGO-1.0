@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import knex from '../database/connection';
+import url from '../utils/url';
 
 // index, show, update, delete
 class ItemController {
@@ -10,7 +11,7 @@ class ItemController {
       return {
         id: item.id,
         tittle: item.title,
-        image_url: `http://localhost:3333/uploads/${item.image}`,
+        image_url: `${url}uploads/${item.image}`,
       };
     });
 
