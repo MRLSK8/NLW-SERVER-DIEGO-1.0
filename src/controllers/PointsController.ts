@@ -77,7 +77,7 @@ class PointsController {
       return response.status(400).json({ Message: 'Points not found' });
     }
 
-    const serializedPoints = points.map((point) => {
+    const serializedPoints = points?.map((point) => {
       return {
         ...point,
         image_url: `${url}uploads/${point.image}`,
@@ -106,7 +106,7 @@ class PointsController {
       return response.status(400).json({ Message: 'No points found' });
     }
 
-    const serializedPoints = points.map((point) => {
+    const serializedPoints = points?.map((point) => {
       return {
         ...point,
         image_url: `${url}uploads/${point.image}`,
